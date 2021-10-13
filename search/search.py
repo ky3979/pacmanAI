@@ -88,18 +88,19 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     fringe = util.Stack()
-    visited = []
+    visited = set()
+    actions = []
 
     # Add start state and actions that lead to this node to fringe
-    fringe.push((problem.getStartState(), []))
+    fringe.push((problem.getStartState(), actions))
 
     while not fringe.isEmpty():
-        # Pop out current node and it's available actions
+        # Pop out a node and the actions to the node
         node, actions = fringe.pop()
 
         if node not in visited:
             # We just visited this new node
-            visited.append(node)
+            visited.add(node)
 
             if problem.isGoalState(node):
                 # This node is the goal, return actions
@@ -114,12 +115,42 @@ def depthFirstSearch(problem):
             if next_node not in visited:
                 actions_to_node = actions + [action]
                 fringe.push((next_node, actions_to_node))
+
     return actions
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    fringe = util.Queue()
+    visited = set()
+    actions = []
+
+    # Add start state and actions that lead to this node to fringe,
+    # and mark it as visited
+    fringe.push((problem.getStartState(), actions))
+    visited.add(problem.getStartState())
+
+    while not fringe.isEmpty():
+        # Dequeue a node and the actions to the node
+        node, actions = fringe.pop()
+
+        if problem.isGoalState(node):
+            # This node is the goal, return actions
+            return actions
+
+        # Get successors of current node
+        successors = problem.getSuccessors(node)
+
+        # If valid adjacent nodes from successor have not been visited,
+        # then enqueue the node and the actions that lead to it into the fringe
+        # and mark it as visited
+        for next_node, action, cost in successors:
+            if next_node not in visited:
+                actions_to_node = actions + [action]
+                fringe.push((next_node, actions_to_node))
+                visited.add(next_node)
+
+    return actions
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
