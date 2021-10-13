@@ -105,21 +105,21 @@ def depthFirstSearch(problem):
         # Pop out a node and the path to node
         node, path = fringe.pop()
 
+        if problem.isGoalState(node):
+            # This node is the goal, return path
+            return path
+
         # Check if visited node to prevent duplicate visits
         if node not in visited:
             # We just visited this new node
             visited.add(node)
-
-            if problem.isGoalState(node):
-                # This node is the goal, return path
-                return path
 
             # Get successors of current node
             successors = problem.getSuccessors(node)
 
             # If valid adjacent nodes from successor have not been visited,
             # then push the node and the path that leads to it into the fringe
-            for next_node, action, cost in successors:
+            for next_node, action, _ in successors:
                 if next_node not in visited:
                     path_to_node = path + [action]
                     fringe.push((next_node, path_to_node))
@@ -130,7 +130,7 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    visited = set()  # Set of visited nodes
+    visited = []  # List of visited nodes
     path = []  # List of actions to a node
 
     # BFS uses FIFO Queue
@@ -146,21 +146,21 @@ def breadthFirstSearch(problem):
         # Dequeue a node and the path to node
         node, path = fringe.pop()
 
+        if problem.isGoalState(node):
+            # This node is the goal, return path
+            return path
+
         # Check if visited node to prevent duplicate visits
         if node not in visited:
             # We just visited this new node
-            visited.add(node)
-
-            if problem.isGoalState(node):
-                # This node is the goal, return path
-                return path
+            visited.append(node)
 
             # Get successors of current node
             successors = problem.getSuccessors(node)
 
             # If valid adjacent nodes from successor have not been visited,
             # then enqueue the node and the path that leads to it into the fringe
-            for next_node, action, cost in successors:
+            for next_node, action, _ in successors:
                 if next_node not in visited:
                     path_to_node = path + [action]
                     fringe.push((next_node, path_to_node))
@@ -178,37 +178,35 @@ def uniformCostSearch(problem):
     # UCS uses a Priority Queue
     # Takes (n, path, f), with,
     # n: current node,
-    # path: list of actions that leads to n,
-    # f: cumulative cost to n
+    # path: list of actions that leads to n
     fringe = util.PriorityQueue()
 
-    # Add start state, initial path, and initial cost to fringe with 0 priority
-    fringe.push((problem.getStartState(), path, f), 0)
+    # Add start state, initial path, and initial cost to fringe
+    fringe.push((problem.getStartState(), path), f)
 
     while not fringe.isEmpty():
-        # Dequeue a node the path to node, and cost to node
-        node, path, f = fringe.pop()
+        # Dequeue a node and the path to node
+        node, path = fringe.pop()
 
-        # Check if visited node or node cost is less than cheapest solution
-        # to prevent duplicate visits
+        if problem.isGoalState(node):
+            # This node is the goal, return path
+            return path
+
+        # Check if visited node to prevent duplicate visits
         if node not in visited:
             # We just visited this new node
             visited.add(node)
-
-            if problem.isGoalState(node):
-                # This node is the goal, return path
-                return path
 
             # Get successors of current node
             successors = problem.getSuccessors(node)
 
             # If valid adjacent nodes from successor have not been visited,
             # then enqueue the node, the path to node, and cost to node into fringe
-            for next_node, action, cost in successors:
+            for next_node, action, _ in successors:
                 if next_node not in visited:
                     path_to_node = path + [action]
-                    cost_to_node = f + cost
-                    fringe.update((next_node, path_to_node, cost_to_node), cost_to_node)
+                    cost_to_node = problem.getCostOfActions(path_to_node)
+                    fringe.update((next_node, path_to_node), cost_to_node)
 
     return path
 
@@ -224,7 +222,46 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    visited = set()  # Set of visited nodes
+    path = []  # List of actions to a node
+    f = 0  # Sum of node's cost and heuristic
+
+    # A-Star uses a Priority Queue
+    # Takes (n, path, f), with,
+    # n: current node,
+    # path: list of actions that leads to n,
+    fringe = util.PriorityQueue()
+
+    # Add start state, initial path, and initial f to fringe
+    fringe.push((problem.getStartState(), path), f)
+
+    while not fringe.isEmpty():
+        # Dequeue a node and the path to node
+        node, path = fringe.pop()
+
+        if problem.isGoalState(node):
+            # This node is the goal, return path
+            return path
+
+        # Check if visited node to prevent duplicate visits
+        if node not in visited:
+            # We just visited this new node
+            visited.add(node)
+
+            # Get successors of current node
+            successors = problem.getSuccessors(node)
+
+            # If valid adjacent nodes from successor have not been visited,
+            # then enqueue the node, the path to node, and sum of cost and heuristic
+            for next_node, action, _ in successors:
+                if next_node not in visited:
+                    path_to_node = path + [action]
+                    g = problem.getCostOfActions(path_to_node)  # Cumulative cost to node
+                    h = heuristic(next_node, problem)           # Heuristic cost to node
+                    f = g + h                                   # Sum of cost and heuristic
+                    fringe.update((next_node, path_to_node), f)
+
+    return path
 
 
 # Abbreviations
