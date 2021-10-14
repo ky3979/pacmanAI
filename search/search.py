@@ -89,7 +89,7 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    visited = set()  # Set of visited nodes
+    visited = []  # List of visited nodes
     path = []  # List of actions to a node
 
     # DFS uses LIFO Stack
@@ -112,7 +112,7 @@ def depthFirstSearch(problem):
         # Check if visited node to prevent duplicate visits
         if node not in visited:
             # We just visited this new node
-            visited.add(node)
+            visited.append(node)
 
             # Get successors of current node
             successors = problem.getSuccessors(node)
@@ -171,7 +171,7 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    visited = set()  # Set of visited nodes
+    visited = []  # List of visited nodes
     path = []  # List of actions to a node
     f = 0   # Cumulative cost to a node
 
@@ -195,7 +195,7 @@ def uniformCostSearch(problem):
         # Check if visited node to prevent duplicate visits
         if node not in visited:
             # We just visited this new node
-            visited.add(node)
+            visited.append(node)
 
             # Get successors of current node
             successors = problem.getSuccessors(node)
@@ -222,7 +222,7 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    visited = set()  # Set of visited nodes
+    visited = []  # List of visited nodes
     path = []  # List of actions to a node
     f = 0  # Sum of node's cost and heuristic
 
@@ -246,7 +246,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         # Check if visited node to prevent duplicate visits
         if node not in visited:
             # We just visited this new node
-            visited.add(node)
+            visited.append(node)
 
             # Get successors of current node
             successors = problem.getSuccessors(node)
