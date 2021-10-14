@@ -489,6 +489,30 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+
+    food_list = foodGrid.asList()
+
+    # Compute distances from current node to all food on grid,
+    food_costs = [util.manhattanDistance(position, food) for food in food_list]
+
+    if food_costs:
+        # Get the closest and farthest food costs
+        min_cost = min(food_costs)
+        max_cost = max(food_costs)
+
+        # Get the closest and farthest foods
+        close_food = food_list[food_costs.index(min_cost)]
+        far_food = food_list[food_costs.index(max_cost)]
+
+        # Compute distance from closest food to farthest food
+        curr_to_min_cost = mazeDistance(position, close_food, problem.startingGameState)
+        min_to_max_cost = util.manhattanDistance(close_food, far_food)
+
+        # Heuristic will be sum of cost to closest corner
+        # and cost from closest to farthest corner
+        return curr_to_min_cost + min_to_max_cost
+    else:
+        return 0  # Return default non-trivial heuristic
     return 0
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -520,7 +544,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -556,7 +580,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]
 
 def mazeDistance(point1, point2, gameState):
     """
